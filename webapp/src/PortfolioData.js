@@ -1,3 +1,10 @@
+export const TABS = [
+  { id: "services", title: "Услуги" },
+  { id: "portfolio", title: "Портфолио" },
+  { id: "prices", title: "Цены" },
+  { id: "contacts", title: "Контакты" },
+];
+
 export const PORTFOLIO = [
   {
     id: "barre-studio",

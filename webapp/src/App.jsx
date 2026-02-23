@@ -67,11 +67,11 @@ export default function App() {
         )}
       </header>
 
-      <main style={{ marginTop: 18 }}>
-        <h2 style={{ margin: "10px 0 10px" }}>Portfolio test</h2>
-        <p style={{ opacity: 0.7, marginTop: 0 }}>Active tab: {activeTab}</p>
+      <main className="main">
+        <h2 className="pageTitle">Portfolio</h2>
+        <p className="pageSub">Active tab: {activeTab}</p>
 
-        <div style={{ display: "grid", gap: 14 }}>
+        <div className="list">
           {PORTFOLIO.map((item) => {
             const img = getImageHref(item.image);
 
@@ -84,6 +84,7 @@ export default function App() {
                 <div className="cardBody">
                   <h3>{item.title}</h3>
                   <p>{item.description}</p>
+
                   <a
                     className="cardLink"
                     href={item.url}
