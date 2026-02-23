@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./App.css";
 import { PORTFOLIO } from "./PortfolioData";
 
@@ -6,6 +7,9 @@ function getImageHref(file) {
 }
 
 export default function App() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("portfolio");
+
   const item = PORTFOLIO[0];
   const img = getImageHref(item.image);
 
@@ -17,13 +21,58 @@ export default function App() {
           <p>Портфолио сайтов • Vite + React</p>
         </div>
 
-        <button className="iconBtn" aria-label="Меню">
+        <button
+          className="iconBtn"
+          aria-label="Меню"
+          onClick={() => setMenuOpen((v) => !v)}
+        >
           ☰
         </button>
+
+        {menuOpen && (
+          <div className="dropdown">
+            <button
+              onClick={() => {
+                setActiveTab("services");
+                setMenuOpen(false);
+              }}
+            >
+              Услуги
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveTab("portfolio");
+                setMenuOpen(false);
+              }}
+            >
+              Портфолио
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveTab("prices");
+                setMenuOpen(false);
+              }}
+            >
+              Цены
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveTab("contacts");
+                setMenuOpen(false);
+              }}
+            >
+              Контакты
+            </button>
+          </div>
+        )}
       </header>
 
       <main style={{ marginTop: 18 }}>
-        <h2 style={{ margin: "10px 0 14px" }}>Portfolio test</h2>
+        <h2 style={{ margin: "10px 0 10px" }}>Portfolio test</h2>
+        <p style={{ opacity: 0.7, marginTop: 0 }}>Active tab: {activeTab}</p>
 
         <div
           style={{
