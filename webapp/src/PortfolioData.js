@@ -14,7 +14,7 @@ export const PORTFOLIO = [
     tab: "portfolio",
     title: "Barre Studio",
     description: "Лендинг/меню с тренировки и расписанием.",
-    url: "https://example.com",
+    url: "https://barre-studio.vercel.app",
     image: "BarreStudio.png",
     tags: ["Vite", "React", "Menu"],
   },
