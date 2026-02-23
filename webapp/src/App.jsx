@@ -1,35 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import { PORTFOLIO } from "./PortfolioData";
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+function getImageHref(file) {
+  return new URL(`./assets/Portfolio/${file}`, import.meta.url).href;
 }
 
-export default App
+export default function App() {
+  const item = PORTFOLIO[0];
+  const img = getImageHref(item.image);
+
+  return (
+    <div style={{ padding: 24, fontFamily: "system-ui" }}>
+      <h1>Portfolio test</h1>
+
+      <div
+        style={{
+          marginTop: 16,
+          padding: 16,
+          border: "1px solid rgba(255,255,255,0.2)",
+          borderRadius: 12,
+          maxWidth: 520,
+        }}
+      >
+        <img
+          src={img}
+          alt={item.title}
+          style={{ width: "100%", borderRadius: 12, display: "block" }}
+        />
+        <h2 style={{ marginTop: 12 }}>{item.title}</h2>
+        <p style={{ opacity: 0.8 }}>{item.description}</p>
+        <a href={item.url} target="_blank" rel="noreferrer">
+          Открыть сайт
+        </a>
+      </div>
+    </div>
+  );
+}
