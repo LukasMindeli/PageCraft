@@ -74,26 +74,18 @@ export default function App() {
         <h2 style={{ margin: "10px 0 10px" }}>Portfolio test</h2>
         <p style={{ opacity: 0.7, marginTop: 0 }}>Active tab: {activeTab}</p>
 
-        <div
-          style={{
-            padding: 16,
-            border: "1px solid rgba(255,255,255,0.12)",
-            borderRadius: 18,
-            background: "rgba(255,255,255,0.04)",
-            backdropFilter: "blur(10px)",
-            maxWidth: 520,
-          }}
-        >
-          <img
-            src={img}
-            alt={item.title}
-            style={{ width: "100%", borderRadius: 14, display: "block" }}
-          />
-          <h3 style={{ marginTop: 12, marginBottom: 6 }}>{item.title}</h3>
-          <p style={{ marginTop: 0, opacity: 0.8 }}>{item.description}</p>
-          <a href={item.url} target="_blank" rel="noreferrer">
-            Открыть сайт
-          </a>
+        <div className="cardRow">
+          <div className="cardThumb">
+            <img src={img} alt={item.title} />
+          </div>
+
+          <div className="cardBody">
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <a className="cardLink" href={item.url} target="_blank" rel="noreferrer">
+              Открыть сайт
+            </a>
+          </div>
         </div>
       </main>
     </div>
