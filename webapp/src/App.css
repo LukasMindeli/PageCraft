@@ -231,3 +231,20 @@ body::after {
     height: 160px;
   }
 }
+
+/* hard background safety */
+body, #root, .container {
+  background: transparent;
+  min-height: 100vh;
+}
+
+/* in case some element creates huge empty area */
+.cardRow, .cardThumb, img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* if something accidentally forces white default */
+* {
+  background-color: transparent;
+}
