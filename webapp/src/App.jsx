@@ -1,3 +1,4 @@
+import SpaceBackground from "./SpaceBackground";
 import { useState } from "react";
 import "./App.css";
 import { PORTFOLIO } from "./PortfolioData";
@@ -12,6 +13,8 @@ export default function App() {
 
   return (
     <div className="container">
+      <SpaceBackground />
+
       <header className="topbar">
         <div className="brand">
           <h1>PageCraft</h1>
