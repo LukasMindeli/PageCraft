@@ -1,30 +1,24 @@
-/* Слои:
-   0) чёрный фон задаётся html/body/#root в App.css
-   1) starsLayer
-   2) planetsLayer
-   3) контент (у тебя .container z-index:1)
-*/
-
 .bgRoot{
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: 0; /* под .container (у тебя z-index:1) */
 }
 
-/* --- ЗВЁЗДЫ (белые точки) --- */
+/* --- ЗВЁЗДЫ --- */
 .starsLayer{
   position: absolute;
   inset: 0;
-  opacity: 0.18;
-  background:
-    radial-gradient(circle, rgba(255,255,255,0.95) 1px, transparent 1.6px) 0 0 / 120px 120px,
-    radial-gradient(circle, rgba(255,255,255,0.80) 1px, transparent 1.6px) 30px 50px / 160px 160px,
-    radial-gradient(circle, rgba(255,255,255,0.70) 1px, transparent 1.6px) 70px 20px / 220px 220px;
 
-  /* лёгкое мерцание */
+  /* сетка звёзд разной плотности */
+  background:
+    radial-gradient(circle, rgba(255,255,255,0.95) 1px, transparent 1.8px) 0 0 / 140px 140px,
+    radial-gradient(circle, rgba(255,255,255,0.70) 1px, transparent 1.8px) 35px 60px / 210px 210px,
+    radial-gradient(circle, rgba(255,255,255,0.55) 1px, transparent 1.8px) 90px 25px / 320px 320px;
+
+  opacity: 0.18;
+  filter: blur(0.2px);
   animation: starsTwinkle 7s ease-in-out infinite;
-  filter: blur(0.15px);
 }
 
 @keyframes starsTwinkle{
@@ -38,27 +32,28 @@
   inset: 0;
 }
 
+/* две анимации: drift + bob */
 .planet{
   position: absolute;
   user-select: none;
   -webkit-user-drag: none;
+
   will-change: transform;
   transform: translate3d(0,0,0);
 
-  animation-name: planetDrift;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
+  animation-name: planetDrift, planetBob;
+  animation-timing-function: ease-in-out, ease-in-out;
+  animation-iteration-count: infinite, infinite;
 }
 
-/* медленный дрейф в разные стороны + микро-поворот */
 @keyframes planetDrift{
-  0%{
-    transform: translate3d(0,0,0) rotate(0deg);
-  }
-  50%{
-    transform: translate3d(var(--dx, 12px), var(--dy, -10px), 0) rotate(var(--rot, 2deg));
-  }
-  100%{
-    transform: translate3d(0,0,0) rotate(0deg);
-  }
+  0%   { transform: translate3d(0,0,0) rotate(0deg); }
+  50%  { transform: translate3d(var(--dx, 12px), var(--dy, -10px), 0) rotate(var(--rot, 2deg)); }
+  100% { transform: translate3d(0,0,0) rotate(0deg); }
+}
+
+@keyframes planetBob{
+  0%   { filter: saturate(1); }
+  50%  { transform: translate3d(0, var(--bob, 10px), 0); }
+  100% { transform: translate3d(0, 0, 0); }
 }

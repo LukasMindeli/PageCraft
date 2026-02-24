@@ -2,56 +2,74 @@
 import { useMemo } from "react";
 import "./PlanetsBackground.css";
 
-function pick(arr, i) {
-  return arr[i % arr.length];
+function rand(min, max) {
+  return min + Math.random() * (max - min);
+}
+function randInt(min, max) {
+  return Math.floor(rand(min, max + 1));
+}
+function pick(arr) {
+  return arr[randInt(0, arr.length - 1)];
 }
 
 export default function PlanetsBackground() {
   const planets = useMemo(() => {
+    // ВАЖНО: useMemo без зависимостей выполнится один раз на монтирование
+    // => при refresh будет НОВЫЙ набор (как ты хочешь)
+
     const files = [
       "planet1.png",
       "planet2.png",
       "planet3.png",
       "planet4.png",
       "planet5.png",
+      "planet6.png",
+      "planet7.png",
     ];
 
+    const total = 34; // больше планет
     const items = [];
-    const total = 34; // планет больше на экране
 
     for (let i = 0; i < total; i++) {
-      const isBig = i < 10;
+      const isBig = i < 9; // несколько “главных”
 
-      // ЕЩЁ ЧУТЬ МЕНЬШЕ (чем было)
-      const size = isBig
-        ? 52 + (i % 5) * 10 // 52..92
-        : 18 + (i % 9) * 4; // 18..50
+      // ЕЩЁ ЧУТЬ МЕНЬШЕ (ты просил) — но не микроскопические
+      const size = isBig ? rand(54, 92) : rand(18, 46);
 
-      // рандомоподобные позиции (детерминированно, но выглядит рандомно)
-      const x = (i * 13 + 11) % 100;
-      const y = (i * 19 + 7) % 100;
+      // РЕАЛЬНЫЙ рандом позиции (чтобы каждый раз по-новому)
+      // Чтобы не лезли прям в край — небольшой “паддинг”
+      const x = rand(6, 94);
+      const y = rand(6, 94);
 
-      // индивидуальные параметры плавания
-      const dx = (i % 2 === 0 ? 1 : -1) * (8 + (i % 7) * 2.0); // 8..20px
-      const dy = (i % 3 === 0 ? 1 : -1) * (6 + (i % 6) * 1.8); // 6..15px
-      const rot = (i % 2 === 0 ? 1 : -1) * (1.0 + (i % 6) * 0.35); // 1..2.75deg
-      const dur = isBig ? 16 + (i % 8) * 2.4 : 12 + (i % 10) * 1.9; // медленно
+      // Разные направления/амплитуды
+      const dx = rand(-22, 22);      // горизонтальный дрейф
+      const dy = rand(-18, 18);      // вертикальный дрейф
+      const bob = rand(6, 14);       // лёгкое покачивание
+      const rot = rand(-4, 4);       // микро-поворот
 
-      // разный старт по времени, чтобы не синхронно
-      const delay = -((i % 12) * 0.9);
+      // Длительности разные, чтобы не “танцевали строем”
+      const driftDur = rand(16, 28); // медленно
+      const bobDur = rand(6, 11);    // покачивание
+
+      // Старт “в разном месте анимации”
+      const delay1 = -rand(0, driftDur);
+      const delay2 = -rand(0, bobDur);
 
       items.push({
-        id: `p-${i}`,
-        src: new URL(`./assets/planets/${pick(files, i)}`, import.meta.url).href,
+        id: `p-${i}-${Math.random().toString(16).slice(2)}`,
+        src: new URL(`./assets/planets/${pick(files)}`, import.meta.url).href,
         size,
         x,
         y,
-        op: isBig ? 0.22 : 0.13,
+        op: isBig ? rand(0.20, 0.30) : rand(0.10, 0.18),
         dx,
         dy,
+        bob,
         rot,
-        dur,
-        delay,
+        driftDur,
+        bobDur,
+        delay1,
+        delay2,
       });
     }
 
@@ -60,10 +78,10 @@ export default function PlanetsBackground() {
 
   return (
     <div className="bgRoot" aria-hidden="true">
-      {/* 1) ЗВЁЗДЫ */}
+      {/* звёзды */}
       <div className="starsLayer" />
 
-      {/* 2) ПЛАНЕТЫ */}
+      {/* планеты */}
       <div className="planetsLayer">
         {planets.map((p) => (
           <img
@@ -77,11 +95,16 @@ export default function PlanetsBackground() {
               left: `${p.x}%`,
               top: `${p.y}%`,
               opacity: p.op,
-              animationDuration: `${p.dur}s`,
-              animationDelay: `${p.delay}s`,
+
+              // параметры для анимации через CSS variables
               "--dx": `${p.dx}px`,
               "--dy": `${p.dy}px`,
+              "--bob": `${p.bob}px`,
               "--rot": `${p.rot}deg`,
+
+              // две анимации одновременно
+              animationDuration: `${p.driftDur}s, ${p.bobDur}s`,
+              animationDelay: `${p.delay1}s, ${p.delay2}s`,
             }}
           />
         ))}
