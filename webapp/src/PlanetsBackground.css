@@ -1,48 +1,56 @@
-/* webapp/src/PlanetsBackground.css */
-
-/* слой между фоном и контентом */
-.planetsLayer {
+.planetsRoot{
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
-
-  pointer-events: none; /* не мешает кликам */
-  z-index: 0; /* ниже контента, выше фона */
-
+  pointer-events: none;
+  z-index: 0;
   overflow: hidden;
+  background: #000;
 }
 
-.planet {
+.planetsLayer{
   position: absolute;
+  inset: -40px; /* чтобы при смещении не было пустых краёв */
   will-change: transform;
+  transition: transform 120ms linear;
+}
 
-  /* 3 движения: медленный дрейф, плавание, вращение */
-  animation-name: planet-drift;
-  animation-timing-function: linear;
+/* Звёзды: два слоя, разная скорость/яркость */
+.stars{
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.75) 55%, transparent 60%),
+    radial-gradient(1px 1px at 30% 80%, rgba(255,255,255,0.55) 55%, transparent 60%),
+    radial-gradient(1px 1px at 70% 30%, rgba(255,255,255,0.65) 55%, transparent 60%),
+    radial-gradient(1px 1px at 90% 60%, rgba(255,255,255,0.45) 55%, transparent 60%),
+    radial-gradient(1px 1px at 50% 50%, rgba(255,255,255,0.35) 55%, transparent 60%);
+  background-size: 220px 220px;
+  opacity: 0.35;
+  animation: twinkle 4.5s ease-in-out infinite;
+}
+
+.stars2{
+  background-size: 320px 320px;
+  opacity: 0.22;
+  animation-duration: 7s;
+}
+
+@keyframes twinkle{
+  0%,100% { filter: brightness(0.9); opacity: 0.26; }
+  50%     { filter: brightness(1.25); opacity: 0.40; }
+}
+
+/* Планеты летают медленно */
+.planet{
+  position: absolute;
+  transform: translate(-50%, -50%);
+  animation-name: floaty;
+  animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
-
-  /* легкая “светимость” без изменения цвета */
-  mix-blend-mode: screen;
 }
 
-@keyframes planet-drift {
-  0% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
-  }
-  50% {
-    transform: translate3d(var(--drift), calc(var(--float) * -1), 0)
-      rotate(calc(var(--rot) / 2));
-  }
-  100% {
-    transform: translate3d(calc(var(--drift) * -1), var(--float), 0)
-      rotate(var(--rot));
-  }
-}
-
-/* На слабых устройствах можно убрать blend-mode (если будет лагать) */
-@media (prefers-reduced-motion: reduce) {
-  .planet {
-    animation: none;
-  }
+@keyframes floaty{
+  0%   { transform: translate(-50%, -50%) translate3d(0px, 0px, 0); }
+  50%  { transform: translate(-50%, -50%) translate3d(26px, -18px, 0); }
+  100% { transform: translate(-50%, -50%) translate3d(0px, 0px, 0); }
 }

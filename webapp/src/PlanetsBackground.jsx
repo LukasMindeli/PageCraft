@@ -1,108 +1,119 @@
 // webapp/src/PlanetsBackground.jsx
-import React, { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./PlanetsBackground.css";
 
-function planetUrl(file) {
-  return new URL(`./assets/planets/${file}`, import.meta.url).href;
+function clamp(v, a, b) {
+  return Math.max(a, Math.min(b, v));
 }
 
 export default function PlanetsBackground() {
-  // Файлы планет (подстрой под свои реальные имена)
-  const files = useMemo(
-    () => ["planet1.png", "planet2.png", "planet3.png", "planet4.png"],
-    []
-  );
+  const layerRef = useRef(null);
+  const [enabled, setEnabled] = useState(false);
 
-  const items = useMemo(() => {
-    const out = [];
-    const rand = (a, b) => a + Math.random() * (b - a);
-    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  // PNG планет (пример: подставь свои реальные имена)
+  const planets = useMemo(() => {
+    // IMPORTANT: замени на свои файлы в webapp/src/assets/planets/...
+    const files = [
+      "planet1.png",
+      "planet2.png",
+      "planet3.png",
+      "planet4.png",
+      "planet5.png",
+    ];
 
-    // Сколько больших и сколько маленьких
-    const bigCount = 7;      // крупные
-    const smallCount = 14;   // маленькие повторы (главное — больше)
-
-    const makeOne = (kind, idx) => {
-      const file = pick(files);
-
-      // размеры
-      const size =
-        kind === "big" ? rand(34, 64) : rand(12, 28);
-
-      // позиции (в %)
-      const x = rand(4, 96);
-      const y = rand(6, 90);
-
-      // скорость (секунды) — маленькие пусть двигаются чуть быстрее
-      const dur =
-        kind === "big" ? rand(55, 95) : rand(38, 75);
-
-      // задержка чтобы стартовали несинхронно
-      const delay = -rand(0, dur);
-
-      // амплитуды движения
-      const drift =
-        kind === "big" ? rand(35, 70) : rand(20, 48);
-      const float =
-        kind === "big" ? rand(14, 28) : rand(10, 22);
-
-      // вращение
-      const rot =
-        kind === "big" ? rand(120, 320) : rand(180, 520);
-
-      // прозрачность
-      const opacity =
-        kind === "big" ? rand(0.20, 0.34) : rand(0.10, 0.22);
-
-      // немного размыть часть маленьких, чтобы была глубина
-      const blur =
-        kind === "small" && Math.random() < 0.35 ? rand(0.6, 1.4) : 0;
-
-      return {
-        key: `${kind}-${file}-${idx}-${Math.random().toString(16).slice(2)}`,
-        src: planetUrl(file),
+    // делаем “много планет”: большие + мелкие копии
+    const items = [];
+    for (let i = 0; i < 18; i++) {
+      const f = files[i % files.length];
+      const size = i < 8 ? 120 + (i % 5) * 30 : 40 + (i % 6) * 16; // большие и мелкие
+      items.push({
+        id: `p-${i}`,
+        src: new URL(`./assets/planets/${f}`, import.meta.url).href,
         size,
-        x,
-        y,
-        dur,
-        delay,
-        drift,
-        float,
-        rot,
-        opacity,
-        blur,
-      };
+        x: (i * 13) % 100,
+        y: (i * 17) % 100,
+        dur: 22 + (i % 8) * 6,
+        drift: 18 + (i % 6) * 10,
+        op: i < 8 ? 0.38 : 0.22,
+      });
+    }
+    return items;
+  }, []);
+
+  useEffect(() => {
+    let raf = 0;
+
+    const apply = (dx, dy) => {
+      const el = layerRef.current;
+      if (!el) return;
+
+      // смещения в пикселях — мягко
+      const tx = clamp(dx * 14, -18, 18);
+      const ty = clamp(dy * 14, -18, 18);
+
+      el.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
     };
 
-    for (let i = 0; i < bigCount; i++) out.push(makeOne("big", i));
-    for (let i = 0; i < smallCount; i++) out.push(makeOne("small", i));
+    const onOrientation = (e) => {
+      // gamma: left/right (-90..90), beta: front/back (-180..180)
+      const gamma = (e.gamma ?? 0) / 30; // нормализация
+      const beta = (e.beta ?? 0) / 30;
 
-    return out;
-  }, [files]);
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => apply(gamma, beta));
+    };
+
+    // Desktop fallback: мышь
+    const onMouseMove = (e) => {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      const dx = (e.clientX - cx) / cx; // -1..1
+      const dy = (e.clientY - cy) / cy;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => apply(dx, dy));
+    };
+
+    // Пробуем включить без permission (Android)
+    window.addEventListener("deviceorientation", onOrientation, true);
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+
+    // если не прилетает ориентация — всё равно пусть будет мышь
+    setEnabled(true);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("deviceorientation", onOrientation, true);
+      window.removeEventListener("mousemove", onMouseMove);
+    };
+  }, []);
+
+  // iOS permission (если понадобится) — добавим кнопку-активацию по клику
+  // Но пока — не ломаем UX.
 
   return (
-    <div className="planetsLayer" aria-hidden="true">
-      {items.map((p) => (
-        <img
-          key={p.key}
-          className="planet"
-          src={p.src}
-          alt=""
-          style={{
-            width: p.size,
-            height: p.size,
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-            opacity: p.opacity,
-            filter: p.blur ? `blur(${p.blur}px)` : undefined,
-            animationDuration: `${p.dur}s`,
-            animationDelay: `${p.delay}s`,
-            "--drift": `${p.drift}px`,
-            "--float": `${p.float}px`,
-            "--rot": `${p.rot}deg`,
-          }}
-        />
-      ))}
+    <div className="planetsRoot" aria-hidden="true">
+      <div ref={layerRef} className="planetsLayer">
+        {/* мерцающее звёздное небо */}
+        <div className="stars" />
+        <div className="stars stars2" />
+
+        {planets.map((p) => (
+          <img
+            key={p.id}
+            className="planet"
+            src={p.src}
+            alt=""
+            style={{
+              width: p.size,
+              height: p.size,
+              left: `${p.x}%`,
+              top: `${p.y}%`,
+              opacity: p.op,
+              animationDuration: `${p.dur}s`,
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 }

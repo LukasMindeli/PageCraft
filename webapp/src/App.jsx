@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import "./App.css";
 
 import PlanetsBackground from "./PlanetsBackground";
-
 import { PORTFOLIO } from "./PortfolioData";
 import { SERVICES, PRICES, CONTACTS } from "./ContentData";
 
@@ -15,25 +14,25 @@ const PAGE_META = {
   home: {
     title: "PageCraft",
     desc:
-      "Мы занимаемся разработкой веб-страниц и мини-веб-приложений: меню для заведений, портфолио, лендинги и Telegram-webapp.",
+      "Ми займаємося розробкою веб-сторінок і міні веб-додатків: меню для закладів, портфоліо, лендінги та Telegram WebApp.",
   },
   services: {
-    title: "Услуги",
+    title: "Послуги",
     desc:
-      "Разработка сайтов и webapp: быстрые лендинги, меню, портфолио, адаптив под телефон, деплой на Vercel, подключение Telegram-бота.",
+      "Розробка сайтів і webapp: швидкі лендінги, меню, портфоліо, адаптив під телефон, деплой на Vercel.",
   },
   portfolio: {
-    title: "Портфолио",
+    title: "Портфоліо",
     desc:
-      "Подборка наших проектов. Нажимай «Открыть сайт», чтобы посмотреть живые страницы.",
+      "Добірка наших проєктів. Натискай «Відкрити сайт», щоб подивитися живі сторінки.",
   },
   prices: {
-    title: "Цены",
-    desc: "Пакеты и стоимость разработки. Подберём вариант под задачу и бюджет.",
+    title: "Ціни",
+    desc: "Пакети та вартість розробки. Підберемо варіант під задачу й бюджет.",
   },
   contacts: {
-    title: "Контакты",
-    desc: "Связь для заказа разработки и вопросов: Telegram / почта / ссылки.",
+    title: "Контакти",
+    desc: "Зв’язок для замовлення розробки та питань: Telegram / Email.",
   },
 };
 
@@ -48,7 +47,6 @@ export default function App() {
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
 
-    // Поиск: ищем по всем карточкам
     if (q) {
       return PORTFOLIO.filter((x) => {
         const hay = [
@@ -64,7 +62,6 @@ export default function App() {
       });
     }
 
-    // Без поиска: карточки только на вкладке portfolio
     if (activeTab === "portfolio") {
       return PORTFOLIO.filter((x) => x.tab === "portfolio");
     }
@@ -72,44 +69,34 @@ export default function App() {
     return [];
   }, [query, activeTab]);
 
-  const pageTitle = isSearching ? "Результаты поиска" : meta.title;
-  const pageDesc = isSearching ? `Найдено: ${visible.length}` : meta.desc;
+  const pageTitle = isSearching ? "Результати пошуку" : meta.title;
+  const pageDesc = isSearching ? `Знайдено: ${visible.length}` : meta.desc;
 
   return (
     <div className="container">
-      {/* Фоновые планеты PNG (сзади контента) */}
       <PlanetsBackground />
 
-      {/* Контент поверх */}
       <header className="topbar">
+        {/* Логотип-текст сверху убираем (как ты хотел раньше) */}
+        {/* <div className="brand"><h1>PageCraft</h1></div> */}
 
         <div className="searchWrap">
           <input
             className="searchInput"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Поиск по проектам…"
-            aria-label="Поиск"
+            placeholder="Пошук по проєктах…"
+            aria-label="Пошук"
           />
-          {query.trim() !== "" && (
-            <button
-              className="clearBtn"
-              onClick={() => setQuery("")}
-              aria-label="Очистить"
-              type="button"
-            >
-              ✕
-            </button>
-          )}
         </div>
 
         <button
           className={`iconBtn ${menuOpen ? "active" : ""}`}
-  aria-label="Меню"
-  onClick={() => setMenuOpen((v) => !v)}
-  type="button"
->
-  ☰
+          aria-label="Меню"
+          onClick={() => setMenuOpen((v) => !v)}
+          type="button"
+        >
+          ☰
         </button>
 
         {menuOpen && (
@@ -121,7 +108,7 @@ export default function App() {
                 setMenuOpen(false);
               }}
             >
-              Главная
+              Головна
             </button>
 
             <button
@@ -131,7 +118,7 @@ export default function App() {
                 setMenuOpen(false);
               }}
             >
-              Услуги
+              Послуги
             </button>
 
             <button
@@ -141,7 +128,7 @@ export default function App() {
                 setMenuOpen(false);
               }}
             >
-              Портфолио
+              Портфоліо
             </button>
 
             <button
@@ -151,7 +138,7 @@ export default function App() {
                 setMenuOpen(false);
               }}
             >
-              Цены
+              Ціни
             </button>
 
             <button
@@ -161,7 +148,7 @@ export default function App() {
                 setMenuOpen(false);
               }}
             >
-              Контакты
+              Контакти
             </button>
           </div>
         )}
@@ -171,15 +158,13 @@ export default function App() {
         <h2 className="pageTitle">{pageTitle}</h2>
         <p className="pageSub">{pageDesc}</p>
 
-        {/* Home */}
         {!isSearching && activeTab === "home" && (
           <div style={{ opacity: 0.85, lineHeight: 1.45, marginBottom: 14 }}>
-            Открой «Портфолио», чтобы увидеть проекты. В «Услуги/Цены/Контакты» —
-            информация о разработке. Поиск сверху ищет по всем проектам.
+            Відкрий «Портфоліо», щоб побачити проєкти. У «Послуги/Ціни/Контакти» —
+            інформація про розробку. Пошук зверху шукає по всіх проєктах.
           </div>
         )}
 
-        {/* Services */}
         {!isSearching && activeTab === "services" && (
           <div className="sectionGrid">
             {SERVICES.map((s) => (
@@ -191,18 +176,11 @@ export default function App() {
           </div>
         )}
 
-        {/* Prices */}
         {!isSearching && activeTab === "prices" && (
           <div className="sectionGrid">
             {PRICES.map((p) => (
               <div className="miniCard" key={p.id}>
-                <h3
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    gap: 10,
-                  }}
-                >
+                <h3 style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
                   <span>{p.title}</span>
                   <span style={{ opacity: 0.9 }}>{p.price}</span>
                 </h3>
@@ -212,7 +190,6 @@ export default function App() {
           </div>
         )}
 
-        {/* Contacts */}
         {!isSearching && activeTab === "contacts" && (
           <div className="sectionGrid">
             {CONTACTS.map((c) => (
@@ -230,7 +207,6 @@ export default function App() {
           </div>
         )}
 
-        {/* Portfolio cards (search OR portfolio tab) */}
         {(isSearching || activeTab === "portfolio") && (
           <div className="list">
             {visible.map((item) => {
@@ -246,13 +222,8 @@ export default function App() {
                     <h3>{item.title}</h3>
                     <p>{item.description}</p>
 
-                    <a
-                      className="cardLink"
-                      href={item.url}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Открыть сайт
+                    <a className="cardLink" href={item.url} target="_blank" rel="noreferrer">
+                      Відкрити сайт
                     </a>
                   </div>
                 </div>
