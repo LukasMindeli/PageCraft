@@ -1,56 +1,69 @@
+/* корень фона */
 .planetsRoot{
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  overflow: hidden;
-  background: #000;
 }
 
+/* слой, который двигается от телефона */
 .planetsLayer{
   position: absolute;
-  inset: -40px; /* чтобы при смещении не было пустых краёв */
-  will-change: transform;
-  transition: transform 120ms linear;
-}
-
-/* Звёзды: два слоя, разная скорость/яркость */
-.stars{
-  position: absolute;
   inset: 0;
-  background-image:
-    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.75) 55%, transparent 60%),
-    radial-gradient(1px 1px at 30% 80%, rgba(255,255,255,0.55) 55%, transparent 60%),
-    radial-gradient(1px 1px at 70% 30%, rgba(255,255,255,0.65) 55%, transparent 60%),
-    radial-gradient(1px 1px at 90% 60%, rgba(255,255,255,0.45) 55%, transparent 60%),
-    radial-gradient(1px 1px at 50% 50%, rgba(255,255,255,0.35) 55%, transparent 60%);
-  background-size: 220px 220px;
-  opacity: 0.35;
-  animation: twinkle 4.5s ease-in-out infinite;
+  will-change: transform;
+  transform: translate3d(0,0,0);
 }
 
+/* звёздное мерцание */
+.stars,
 .stars2{
-  background-size: 320px 320px;
-  opacity: 0.22;
-  animation-duration: 7s;
+  position: absolute;
+  inset: -20%;
+  background-repeat: repeat;
+  background-size: 420px 420px;
+  opacity: 0.12;
+  filter: blur(0.2px);
+  animation: twinkle 6s ease-in-out infinite;
+}
+
+/* второй слой звёзд — другой масштаб/скорость */
+.stars2{
+  background-size: 260px 260px;
+  opacity: 0.08;
+  animation-duration: 8.5s;
+  mix-blend-mode: screen;
 }
 
 @keyframes twinkle{
-  0%,100% { filter: brightness(0.9); opacity: 0.26; }
-  50%     { filter: brightness(1.25); opacity: 0.40; }
+  0%,100% { opacity: 0.07; }
+  50%     { opacity: 0.14; }
 }
 
-/* Планеты летают медленно */
+/* планеты */
 .planet{
   position: absolute;
-  transform: translate(-50%, -50%);
-  animation-name: floaty;
+  user-select: none;
+  -webkit-user-drag: none;
+
+  /* индивидуальное "парение" */
+  will-change: transform;
+  transform: translate3d(0,0,0);
+  animation-name: planetFloat;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
 }
 
-@keyframes floaty{
-  0%   { transform: translate(-50%, -50%) translate3d(0px, 0px, 0); }
-  50%  { transform: translate(-50%, -50%) translate3d(26px, -18px, 0); }
-  100% { transform: translate(-50%, -50%) translate3d(0px, 0px, 0); }
+/* парение: маленький дрейф + микро-поворот */
+@keyframes planetFloat{
+  0%{
+    transform: translate3d(0,0,0) rotate(0deg);
+  }
+  50%{
+    transform:
+      translate3d(var(--dx, 10px), var(--dy, -8px), 0)
+      rotate(var(--rot, 2deg));
+  }
+  100%{
+    transform: translate3d(0,0,0) rotate(0deg);
+  }
 }
