@@ -23,8 +23,6 @@ export default function PlanetsBackground() {
       "planet3.png",
       "planet4.png",
       "planet5.png",
-      "planet6.png",
-      "planet7.png",
     ];
 
     const total = 34; // больше планет
