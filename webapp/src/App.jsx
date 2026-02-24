@@ -82,10 +82,6 @@ export default function App() {
 
       {/* Контент поверх */}
       <header className="topbar">
-        <div className="brand">
-          <h1>PageCraft</h1>
-          <p>Веб-разработка • Vite + React • Telegram WebApp</p>
-        </div>
 
         <div className="searchWrap">
           <input
