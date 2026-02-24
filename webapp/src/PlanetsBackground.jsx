@@ -2,46 +2,82 @@
 import React, { useMemo } from "react";
 import "./PlanetsBackground.css";
 
-// Vite: импортируем PNG как URL
 function planetUrl(file) {
   return new URL(`./assets/planets/${file}`, import.meta.url).href;
 }
 
 export default function PlanetsBackground() {
-  // Список файлов — поменяешь под свои PNG
+  // Файлы планет (подстрой под свои реальные имена)
   const files = useMemo(
     () => ["planet1.png", "planet2.png", "planet3.png", "planet4.png"],
     []
   );
 
-  // Генерим “частицы” с разными траекториями/скоростями
   const items = useMemo(() => {
-    return files.map((file, i) => {
-      // размеры: маленькие (можешь менять)
-      const size = 26 + (i % 4) * 10; // 26..56
-      // стартовые позиции в %
-      const x = 10 + (i * 17) % 80; // 10..90
-      const y = 12 + (i * 23) % 75; // 12..87
-      // длительность анимации
-      const dur = 38 + (i % 5) * 12; // 38..86 сек
-      // задержка чтобы не стартовали синхронно
-      const delay = -(i * 7);
+    const out = [];
+    const rand = (a, b) => a + Math.random() * (b - a);
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    // Сколько больших и сколько маленьких
+    const bigCount = 7;      // крупные
+    const smallCount = 14;   // маленькие повторы (главное — больше)
+
+    const makeOne = (kind, idx) => {
+      const file = pick(files);
+
+      // размеры
+      const size =
+        kind === "big" ? rand(34, 64) : rand(12, 28);
+
+      // позиции (в %)
+      const x = rand(4, 96);
+      const y = rand(6, 90);
+
+      // скорость (секунды) — маленькие пусть двигаются чуть быстрее
+      const dur =
+        kind === "big" ? rand(55, 95) : rand(38, 75);
+
+      // задержка чтобы стартовали несинхронно
+      const delay = -rand(0, dur);
+
+      // амплитуды движения
+      const drift =
+        kind === "big" ? rand(35, 70) : rand(20, 48);
+      const float =
+        kind === "big" ? rand(14, 28) : rand(10, 22);
+
+      // вращение
+      const rot =
+        kind === "big" ? rand(120, 320) : rand(180, 520);
+
+      // прозрачность
+      const opacity =
+        kind === "big" ? rand(0.20, 0.34) : rand(0.10, 0.22);
+
+      // немного размыть часть маленьких, чтобы была глубина
+      const blur =
+        kind === "small" && Math.random() < 0.35 ? rand(0.6, 1.4) : 0;
 
       return {
-        key: `${file}-${i}`,
+        key: `${kind}-${file}-${idx}-${Math.random().toString(16).slice(2)}`,
         src: planetUrl(file),
         size,
         x,
         y,
         dur,
         delay,
-        drift: 40 + (i % 4) * 18, // насколько “плывёт” по X
-        float: 18 + (i % 3) * 10, // насколько “плавает” по Y
-        rot: 160 + (i % 4) * 120, // сколько градусов за цикл
-        opacity: 0.22 + (i % 4) * 0.06, // 0.22..0.40
-        blur: i % 3 === 0 ? 0.6 : 0, // чуть мягче некоторые
+        drift,
+        float,
+        rot,
+        opacity,
+        blur,
       };
-    });
+    };
+
+    for (let i = 0; i < bigCount; i++) out.push(makeOne("big", i));
+    for (let i = 0; i < smallCount; i++) out.push(makeOne("small", i));
+
+    return out;
   }, [files]);
 
   return (
