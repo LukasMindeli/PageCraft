@@ -1,5 +1,5 @@
+import { useMemo, useState } from "react";
 import SpaceBackground from "./SpaceBackground";
-import { useState } from "react";
 import "./App.css";
 import { PORTFOLIO } from "./PortfolioData";
 
@@ -10,6 +10,30 @@ function getImageHref(file) {
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("portfolio");
+  const [query, setQuery] = useState("");
+
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+
+    // если поиск НЕ пустой — ищем по всем карточкам (игнорируем таб)
+    if (q) {
+      return PORTFOLIO.filter((x) => {
+        const hay = [
+          x.title,
+          x.description,
+          x.url,
+          (x.tags || []).join(" "),
+          x.tab,
+        ]
+          .join(" ")
+          .toLowerCase();
+        return hay.includes(q);
+      });
+    }
+
+    // если поиск пустой — фильтруем по активному табу
+    return PORTFOLIO.filter((x) => x.tab === activeTab);
+  }, [query, activeTab]);
 
   return (
     <div className="container">
@@ -19,6 +43,25 @@ export default function App() {
         <div className="brand">
           <h1>PageCraft</h1>
           <p>Портфолио сайтов • Vite + React</p>
+        </div>
+
+        <div className="searchWrap">
+          <input
+            className="searchInput"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Поиск по портфолио…"
+            aria-label="Поиск"
+          />
+          {query.trim() !== "" && (
+            <button
+              className="clearBtn"
+              onClick={() => setQuery("")}
+              aria-label="Очистить"
+            >
+              ✕
+            </button>
+          )}
         </div>
 
         <button
@@ -71,11 +114,18 @@ export default function App() {
       </header>
 
       <main className="main">
-        <h2 className="pageTitle">Portfolio</h2>
-        <p className="pageSub">Active tab: {activeTab}</p>
+        <h2 className="pageTitle">
+          {query.trim() ? "Результаты поиска" : "Портфолио"}
+        </h2>
+
+        <p className="pageSub">
+          {query.trim()
+            ? `Найдено: ${visible.length}`
+            : `Активная категория: ${activeTab}`}
+        </p>
 
         <div className="list">
-          {PORTFOLIO.map((item) => {
+          {visible.map((item) => {
             const img = getImageHref(item.image);
 
             return (
