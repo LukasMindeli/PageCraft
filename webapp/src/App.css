@@ -30,12 +30,6 @@ html, body {
   margin-top: 18px;
 }
 
-.pageTitle {
-  margin: 10px 0 6px;
-  font-size: clamp(26px, 3.2vw, 40px);
-  letter-spacing: 0.6px;
-}
-
 .pageSub {
   margin: 0 0 16px;
   opacity: 0.7;
@@ -48,10 +42,10 @@ html, body {
   position: relative;
   z-index: 100;
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 64px;
   gap: 12px;
+  align-items: center;
 
   padding: 14px 14px;
   border-radius: 0;
@@ -62,16 +56,25 @@ html, body {
   box-shadow: 0 18px 60px rgba(0,0,0,0.45);
 }
 
-.brand h1 {
-  margin: 0;
-  font-size: 18px;
-  letter-spacing: 0.4px;
-}
+/* заголовок вкладки в topbar */
+.topTitle{
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-.brand p {
-  margin: 6px 0 0;
-  font-size: 12px;
-  opacity: 0.7;
+  padding: 0 12px;
+  border-radius: 0;
+
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+
+  font-size: 14px;
+  letter-spacing: 0.35px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.9);
+
+  user-select: none;
 }
 
 /* burger button */
@@ -217,6 +220,19 @@ html, body {
     width: 100%;
     height: 160px;
   }
+
+  .topbar{
+    grid-template-columns: 1fr 56px;
+  }
+  .topTitle{
+    height: 56px;
+    font-size: 12px;
+  }
+  .iconBtn{
+    width: 56px;
+    height: 56px;
+    font-size: 20px;
+  }
 }
 
 /* space background */
@@ -227,54 +243,4 @@ html, body {
   height: 100vh;
   pointer-events: none;
   z-index: 0;
-}
-
-/* search */
-.searchWrap {
-  width: 64px;          /* как у гамбургера */
-  height: 64px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  margin-left: auto;
-  margin-right: 0;
-
-  padding: 0 10px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  backdrop-filter: blur(10px);
-}
-
-.searchInput {
-  width: 100%;
-  height: 42px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.14);
-  outline: none;
-  color: rgba(255,255,255,0.92);
-  font-size: 14px;
-  padding: 0 10px;
-}
-
-.searchInput::placeholder {
-  color: rgba(255,255,255,0.45);
-}
-
-/* в маленькой плитке кнопка очистки только мешает */
-.clearBtn {
-  display: none;
-}
-
-/* на мобилке уменьшаем обе плитки одинаково */
-@media (max-width: 520px) {
-  .searchWrap, .iconBtn {
-    width: 56px;
-    height: 56px;
-  }
-  .searchInput {
-    height: 38px;
-    font-size: 13px;
-  }
 }

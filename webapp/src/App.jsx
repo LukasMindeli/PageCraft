@@ -42,7 +42,6 @@ export default function App() {
 
   const meta = PAGE_META[activeTab] || PAGE_META.home;
 
-  // портфоліо показуємо ТІЛЬКИ на вкладці portfolio
   const visible = useMemo(() => {
     if (activeTab === "portfolio") {
       return PORTFOLIO.filter((x) => x.tab === "portfolio");
@@ -55,8 +54,8 @@ export default function App() {
       <PlanetsBackground />
 
       <header className="topbar">
-        {/* убрали бренд/подпись сверху, оставляем чистую шапку */}
-        <div style={{ flex: 1 }} />
+        {/* Заголовок вкладки СВЕРХУ вместо поиска */}
+        <div className="topTitle">{meta.title}</div>
 
         <button
           className={`iconBtn ${menuOpen ? "active" : ""}`}
@@ -123,7 +122,7 @@ export default function App() {
       </header>
 
       <main className="main">
-        <h2 className="pageTitle">{meta.title}</h2>
+        {/* Внизу остаётся описание вкладки */}
         <p className="pageSub">{meta.desc}</p>
 
         {activeTab === "home" && (
@@ -148,7 +147,13 @@ export default function App() {
           <div className="sectionGrid">
             {PRICES.map((p) => (
               <div className="miniCard" key={p.id}>
-                <h3 style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+                <h3
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: 10,
+                  }}
+                >
                   <span>{p.title}</span>
                   <span style={{ opacity: 0.9 }}>{p.price}</span>
                 </h3>
@@ -190,7 +195,12 @@ export default function App() {
                     <h3>{item.title}</h3>
                     <p>{item.description}</p>
 
-                    <a className="cardLink" href={item.url} target="_blank" rel="noreferrer">
+                    <a
+                      className="cardLink"
+                      href={item.url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Відкрити сайт
                     </a>
                   </div>
