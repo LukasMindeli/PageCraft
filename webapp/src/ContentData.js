@@ -22,12 +22,22 @@ export const SERVICES = [
 ];
 
 export const PRICES = [
-  { id: "p1", title: "Старт", price: "от $50", desc: "Мини-лендинг/меню на базе шаблона, быстрый запуск." },
-  { id: "p2", title: "Стандарт", price: "от $120", desc: "Несколько разделов, поиск/фильтры, правки, деплой." },
-  { id: "p3", title: "Премиум", price: "от $250", desc: "Индивидуальный дизайн, расширенная логика, интеграции." },
+  { id: "p1", title: "Старт", price: "от 1800 грн", desc: "Мини-лендинг/меню на базе шаблона, быстрый запуск." },
+  { id: "p2", title: "Стандарт", price: "2500 грн", desc: "Несколько разделов, поиск/фильтры, правки, деплой." },
+  { id: "p3", title: "Премиум", price: "от 5500 грн", desc: "Индивидуальный дизайн, расширенная логика, интеграции." },
 ];
 
 export const CONTACTS = [
-  { id: "tg", label: "Telegram", value: "@your_username", href: "https://t.me/your_username" },
-  { id: "email", label: "Email", value: "your@email.com", href: "mailto:your@email.com" },
+  {
+    id: "tg",
+    label: "Telegram",
+    value: "@LukasPageCraft",
+    href: "https://t.me/LukasPageCraft",
+  },
+  {
+    id: "email",
+    label: "Email",
+    value: "domirefalasol@gmail.com",
+    href: "mailto:domirefalasol@gmail.com",
+  },
 ];
