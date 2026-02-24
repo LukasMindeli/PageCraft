@@ -39,56 +39,24 @@ const PAGE_META = {
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("home");
-  const [query, setQuery] = useState("");
 
-  const isSearching = query.trim() !== "";
   const meta = PAGE_META[activeTab] || PAGE_META.home;
 
+  // портфоліо показуємо ТІЛЬКИ на вкладці portfolio
   const visible = useMemo(() => {
-    const q = query.trim().toLowerCase();
-
-    if (q) {
-      return PORTFOLIO.filter((x) => {
-        const hay = [
-          x.title,
-          x.description,
-          x.url,
-          (x.tags || []).join(" "),
-          x.tab,
-        ]
-          .join(" ")
-          .toLowerCase();
-        return hay.includes(q);
-      });
-    }
-
     if (activeTab === "portfolio") {
       return PORTFOLIO.filter((x) => x.tab === "portfolio");
     }
-
     return [];
-  }, [query, activeTab]);
-
-  const pageTitle = isSearching ? "Результати пошуку" : meta.title;
-  const pageDesc = isSearching ? `Знайдено: ${visible.length}` : meta.desc;
+  }, [activeTab]);
 
   return (
     <div className="container">
       <PlanetsBackground />
 
       <header className="topbar">
-        {/* Логотип-текст сверху убираем (как ты хотел раньше) */}
-        {/* <div className="brand"><h1>PageCraft</h1></div> */}
-
-        <div className="searchWrap">
-          <input
-            className="searchInput"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Пошук по проєктах…"
-            aria-label="Пошук"
-          />
-        </div>
+        {/* убрали бренд/подпись сверху, оставляем чистую шапку */}
+        <div style={{ flex: 1 }} />
 
         <button
           className={`iconBtn ${menuOpen ? "active" : ""}`}
@@ -155,17 +123,17 @@ export default function App() {
       </header>
 
       <main className="main">
-        <h2 className="pageTitle">{pageTitle}</h2>
-        <p className="pageSub">{pageDesc}</p>
+        <h2 className="pageTitle">{meta.title}</h2>
+        <p className="pageSub">{meta.desc}</p>
 
-        {!isSearching && activeTab === "home" && (
+        {activeTab === "home" && (
           <div style={{ opacity: 0.85, lineHeight: 1.45, marginBottom: 14 }}>
             Відкрий «Портфоліо», щоб побачити проєкти. У «Послуги/Ціни/Контакти» —
-            інформація про розробку. Пошук зверху шукає по всіх проєктах.
+            інформація про розробку.
           </div>
         )}
 
-        {!isSearching && activeTab === "services" && (
+        {activeTab === "services" && (
           <div className="sectionGrid">
             {SERVICES.map((s) => (
               <div className="miniCard" key={s.id}>
@@ -176,7 +144,7 @@ export default function App() {
           </div>
         )}
 
-        {!isSearching && activeTab === "prices" && (
+        {activeTab === "prices" && (
           <div className="sectionGrid">
             {PRICES.map((p) => (
               <div className="miniCard" key={p.id}>
@@ -190,7 +158,7 @@ export default function App() {
           </div>
         )}
 
-        {!isSearching && activeTab === "contacts" && (
+        {activeTab === "contacts" && (
           <div className="sectionGrid">
             {CONTACTS.map((c) => (
               <a
@@ -207,7 +175,7 @@ export default function App() {
           </div>
         )}
 
-        {(isSearching || activeTab === "portfolio") && (
+        {activeTab === "portfolio" && (
           <div className="list">
             {visible.map((item) => {
               const img = getImageHref(item.image);
