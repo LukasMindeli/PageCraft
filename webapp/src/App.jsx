@@ -104,12 +104,12 @@ export default function App() {
         </div>
 
         <button
-          className="iconBtn"
-          aria-label="Меню"
-          onClick={() => setMenuOpen((v) => !v)}
-          type="button"
-        >
-          ☰
+          className={`iconBtn ${menuOpen ? "active" : ""}`}
+  aria-label="Меню"
+  onClick={() => setMenuOpen((v) => !v)}
+  type="button"
+>
+  ☰
         </button>
 
         {menuOpen && (
