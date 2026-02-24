@@ -1,112 +1,100 @@
-// webapp/src/PlanetsBackground.jsx
 import { useMemo } from "react";
 import "./PlanetsBackground.css";
 
 function rand(min, max) {
-  return min + Math.random() * (max - min);
-}
-function randInt(min, max) {
-  return Math.floor(rand(min, max + 1));
+  return Math.random() * (max - min) + min;
 }
 function pick(arr) {
-  return arr[randInt(0, arr.length - 1)];
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 export default function PlanetsBackground() {
-  const planets = useMemo(() => {
-    // ВАЖНО: useMemo без зависимостей выполнится один раз на монтирование
-    // => при refresh будет НОВЫЙ набор (как ты хочешь)
+  // ✅ ЯВНО: пути к планетам (поменяй папку/имена если у тебя иначе)
+  const planetSrc = useMemo(
+    () => [
+      new URL("./assets/planets/planet1.png", import.meta.url).href,
+      new URL("./assets/planets/planet2.png", import.meta.url).href,
+      new URL("./assets/planets/planet3.png", import.meta.url).href,
+      new URL("./assets/planets/planet4.png", import.meta.url).href,
+      new URL("./assets/planets/planet5.png", import.meta.url).href,
+    ],
+    []
+  );
 
-    const files = [
-      "planet1.png",
-      "planet2.png",
-      "planet3.png",
-      "planet4.png",
-      "planet5.png",
-    ];
+  // ✅ ВАЖНО: items создаются ОДИН РАЗ (useMemo [])
+  const items = useMemo(() => {
+    const count = 18; // больше планет на экране (подстрой)
+    const res = [];
 
-    const total = 34; // больше планет
-    const items = [];
+    for (let i = 0; i < count; i++) {
+      const size = rand(18, 58); // еще чуть меньше
+      const x = rand(2, 98);     // %
+      const y = rand(6, 96);     // %
 
-    for (let i = 0; i < total; i++) {
-      const isBig = i < 9; // несколько “главных”
+      // разные “траектории”: выбираем разные keyframes
+      const driftClass = pick(["driftA", "driftB", "driftC", "driftD"]);
 
-      // ЕЩЁ ЧУТЬ МЕНЬШЕ (ты просил) — но не микроскопические
-      const size = isBig ? rand(54, 92) : rand(18, 46);
+      // длительность и задержка — чтобы всё было не синхронно
+      const dur = rand(18, 46);   // секунды
+      const delay = -rand(0, dur); // отрицательная = как будто уже летит
 
-      // РЕАЛЬНЫЙ рандом позиции (чтобы каждый раз по-новому)
-      // Чтобы не лезли прям в край — небольшой “паддинг”
-      const x = rand(6, 94);
-      const y = rand(6, 94);
+      // амплитуда (на сколько пикселей гуляет)
+      const ampX = rand(18, 90);
+      const ampY = rand(14, 70);
 
-      // Разные направления/амплитуды
-      const dx = rand(-22, 22);      // горизонтальный дрейф
-      const dy = rand(-18, 18);      // вертикальный дрейф
-      const bob = rand(6, 14);       // лёгкое покачивание
-      const rot = rand(-4, 4);       // микро-поворот
+      // чуть разная прозрачность
+      const opacity = rand(0.25, 0.85);
 
-      // Длительности разные, чтобы не “танцевали строем”
-      const driftDur = rand(16, 28); // медленно
-      const bobDur = rand(6, 11);    // покачивание
-
-      // Старт “в разном месте анимации”
-      const delay1 = -rand(0, driftDur);
-      const delay2 = -rand(0, bobDur);
-
-      items.push({
-        id: `p-${i}-${Math.random().toString(16).slice(2)}`,
-        src: new URL(`./assets/planets/${pick(files)}`, import.meta.url).href,
+      res.push({
+        id: `p_${i}`,
+        src: pick(planetSrc),
         size,
         x,
         y,
-        op: isBig ? rand(0.20, 0.30) : rand(0.10, 0.18),
-        dx,
-        dy,
-        bob,
-        rot,
-        driftDur,
-        bobDur,
-        delay1,
-        delay2,
+        driftClass,
+        dur,
+        delay,
+        ampX,
+        ampY,
+        opacity,
       });
     }
 
-    return items;
-  }, []);
+    return res;
+  }, [planetSrc]);
 
   return (
-    <div className="bgRoot" aria-hidden="true">
-      {/* звёзды */}
+    <div className="planetsLayer" aria-hidden="true">
+      {/* ⭐️ звезды (слой ниже планет) */}
       <div className="starsLayer" />
 
-      {/* планеты */}
-      <div className="planetsLayer">
-        {planets.map((p) => (
-          <img
-            key={p.id}
-            className="planet"
-            src={p.src}
-            alt=""
-            style={{
-              width: p.size,
-              height: p.size,
-              left: `${p.x}%`,
-              top: `${p.y}%`,
-              opacity: p.op,
+      {/* 🪐 планеты */}
+      {items.map((p) => (
+        <img
+          key={p.id}
+          className={`planet ${p.driftClass}`}
+          src={p.src}
+          alt=""
+          style={{
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            opacity: p.opacity,
 
-              // параметры для анимации через CSS variables
-              "--dx": `${p.dx}px`,
-              "--dy": `${p.dy}px`,
-              "--bob": `${p.bob}px`,
-              "--rot": `${p.rot}deg`,
-
-              // две анимации одновременно
-              animationDuration: `${p.driftDur}s, ${p.bobDur}s`,
-              animationDelay: `${p.delay1}s, ${p.delay2}s`,
-            }}
-          />
-        ))}
-      </div>
+            // управляем анимацией через CSS-переменные
+            "--dur": `${p.dur}s`,
+            "--delay": `${p.delay}s`,
+            "--ax": `${p.ampX}px`,
+            "--ay": `${p.ampY}px`,
+          }}
+          onError={(e) => {
+            // если вдруг битая картинка — спрячем, чтобы не было серых квадратов
+            e.currentTarget.style.display = "none";
+          }}
+          draggable="false"
+        />
+      ))}
     </div>
   );
 }
