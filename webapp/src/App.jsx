@@ -1,9 +1,7 @@
 // webapp/src/App.jsx
-import { useMemo, useRef, useState } from "react";
 import { useMemo, useState } from "react";
 import "./App.css";
 
-import IntroPlanet from "./IntroPlanet";
 import PlanetsBackground from "./PlanetsBackground";
 
 import { PORTFOLIO } from "./PortfolioData";
@@ -40,7 +38,6 @@ const PAGE_META = {
 };
 
 export default function App() {
-  const [entered, setEntered] = useState(false); // 👈 интро: вошли или нет
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("home");
   const [query, setQuery] = useState("");
@@ -51,6 +48,7 @@ export default function App() {
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
 
+    // Поиск: ищем по всем карточкам
     if (q) {
       return PORTFOLIO.filter((x) => {
         const hay = [
@@ -66,6 +64,7 @@ export default function App() {
       });
     }
 
+    // Без поиска: карточки только на вкладке portfolio
     if (activeTab === "portfolio") {
       return PORTFOLIO.filter((x) => x.tab === "portfolio");
     }
@@ -78,10 +77,7 @@ export default function App() {
 
   return (
     <div className="container">
-      {/* INTRO: большая планета, клик => музыка + fade => enter */}
-      {!entered && <IntroPlanet onEnter={() => setEntered(true)} />}
-
-      {/* Фон/слои */}
+      {/* Фоновые планеты PNG (сзади контента) */}
       <PlanetsBackground />
 
       {/* Контент поверх */}
