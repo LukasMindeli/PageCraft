@@ -1,6 +1,8 @@
+// webapp/src/App.jsx
 import { useMemo, useState } from "react";
-import SpaceBackground from "./SpaceBackground";
 import "./App.css";
+
+import PlanetsBackground from "./PlanetsBackground";
 import { PORTFOLIO } from "./PortfolioData";
 import { SERVICES, PRICES, CONTACTS } from "./ContentData";
 
@@ -11,15 +13,18 @@ function getImageHref(file) {
 const PAGE_META = {
   home: {
     title: "PageCraft",
-    desc: "Мы занимаемся разработкой веб-страниц и мини-веб-приложений: меню для заведений, портфолио, лендинги и Telegram-webapp.",
+    desc:
+      "Мы занимаемся разработкой веб-страниц и мини-веб-приложений: меню для заведений, портфолио, лендинги и Telegram-webapp.",
   },
   services: {
     title: "Услуги",
-    desc: "Разработка сайтов и webapp: быстрые лендинги, меню, портфолио, адаптив под телефон, деплой на Vercel, подключение Telegram-бота.",
+    desc:
+      "Разработка сайтов и webapp: быстрые лендинги, меню, портфолио, адаптив под телефон, деплой на Vercel, подключение Telegram-бота.",
   },
   portfolio: {
     title: "Портфолио",
-    desc: "Подборка наших проектов. Нажимай «Открыть сайт», чтобы посмотреть живые страницы.",
+    desc:
+      "Подборка наших проектов. Нажимай «Открыть сайт», чтобы посмотреть живые страницы.",
   },
   prices: {
     title: "Цены",
@@ -33,17 +38,17 @@ const PAGE_META = {
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("home"); // главная по умолчанию
+  const [activeTab, setActiveTab] = useState("home");
   const [query, setQuery] = useState("");
 
   const isSearching = query.trim() !== "";
   const meta = PAGE_META[activeTab] || PAGE_META.home;
 
-  // visible: список карточек портфолио
+  // Портфолио-карточки, которые показываем
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
 
-    // если поиск НЕ пустой — ищем по всем (игнорируем таб)
+    // Поиск: ищем по всем карточкам
     if (q) {
       return PORTFOLIO.filter((x) => {
         const hay = [
@@ -59,7 +64,7 @@ export default function App() {
       });
     }
 
-    // если поиск пустой — портфолио показываем только на вкладке portfolio
+    // Без поиска: показываем карточки только на вкладке portfolio
     if (activeTab === "portfolio") {
       return PORTFOLIO.filter((x) => x.tab === "portfolio");
     }
@@ -72,8 +77,12 @@ export default function App() {
 
   return (
     <div className="container">
-      <SpaceBackground />
+      {/* 1) ЧЕРНЫЙ ФОН у тебя задается CSS-ом (html, body, #root) */}
 
+      {/* 2) Планетки PNG: слой на фоне, но ниже контента */}
+      <PlanetsBackground />
+
+      {/* 3) Контент поверх планет */}
       <header className="topbar">
         <div className="brand">
           <h1>PageCraft</h1>
@@ -93,6 +102,7 @@ export default function App() {
               className="clearBtn"
               onClick={() => setQuery("")}
               aria-label="Очистить"
+              type="button"
             >
               ✕
             </button>
@@ -103,6 +113,7 @@ export default function App() {
           className="iconBtn"
           aria-label="Меню"
           onClick={() => setMenuOpen((v) => !v)}
+          type="button"
         >
           ☰
         </button>
@@ -110,6 +121,7 @@ export default function App() {
         {menuOpen && (
           <div className="dropdown">
             <button
+              type="button"
               onClick={() => {
                 setActiveTab("home");
                 setMenuOpen(false);
@@ -119,6 +131,7 @@ export default function App() {
             </button>
 
             <button
+              type="button"
               onClick={() => {
                 setActiveTab("services");
                 setMenuOpen(false);
@@ -128,6 +141,7 @@ export default function App() {
             </button>
 
             <button
+              type="button"
               onClick={() => {
                 setActiveTab("portfolio");
                 setMenuOpen(false);
@@ -137,6 +151,7 @@ export default function App() {
             </button>
 
             <button
+              type="button"
               onClick={() => {
                 setActiveTab("prices");
                 setMenuOpen(false);
@@ -146,6 +161,7 @@ export default function App() {
             </button>
 
             <button
+              type="button"
               onClick={() => {
                 setActiveTab("contacts");
                 setMenuOpen(false);
@@ -186,7 +202,13 @@ export default function App() {
           <div className="sectionGrid">
             {PRICES.map((p) => (
               <div className="miniCard" key={p.id}>
-                <h3 style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+                <h3
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: 10,
+                  }}
+                >
                   <span>{p.title}</span>
                   <span style={{ opacity: 0.9 }}>{p.price}</span>
                 </h3>
