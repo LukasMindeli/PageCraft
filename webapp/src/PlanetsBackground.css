@@ -1,0 +1,48 @@
+/* webapp/src/PlanetsBackground.css */
+
+/* слой между фоном и контентом */
+.planetsLayer {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+
+  pointer-events: none; /* не мешает кликам */
+  z-index: 0; /* ниже контента, выше фона */
+
+  overflow: hidden;
+}
+
+.planet {
+  position: absolute;
+  will-change: transform;
+
+  /* 3 движения: медленный дрейф, плавание, вращение */
+  animation-name: planet-drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+
+  /* легкая “светимость” без изменения цвета */
+  mix-blend-mode: screen;
+}
+
+@keyframes planet-drift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(var(--drift), calc(var(--float) * -1), 0)
+      rotate(calc(var(--rot) / 2));
+  }
+  100% {
+    transform: translate3d(calc(var(--drift) * -1), var(--float), 0)
+      rotate(var(--rot));
+  }
+}
+
+/* На слабых устройствах можно убрать blend-mode (если будет лагать) */
+@media (prefers-reduced-motion: reduce) {
+  .planet {
+    animation: none;
+  }
+}
