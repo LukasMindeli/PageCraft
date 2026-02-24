@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import SpaceBackground from "./SpaceBackground";
 import "./App.css";
 import { PORTFOLIO } from "./PortfolioData";
+import { SERVICES, PRICES, CONTACTS } from "./ContentData";
 
 function getImageHref(file) {
   return new URL(`./assets/Portfolio/${file}`, import.meta.url).href;
@@ -32,20 +33,17 @@ const PAGE_META = {
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("home"); // 👈 главная по умолчанию
+  const [activeTab, setActiveTab] = useState("home"); // главная по умолчанию
   const [query, setQuery] = useState("");
 
   const isSearching = query.trim() !== "";
   const meta = PAGE_META[activeTab] || PAGE_META.home;
 
-  const pageTitle = isSearching ? "Результаты поиска" : meta.title;
-  const pageDesc = isSearching ? `Найдено: ${visibleCountPlaceholder()}` : meta.desc;
-
-  // visible: что рендерим в списке карточек
+  // visible: список карточек портфолио
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
 
-    // если поиск НЕ пустой — ищем по всем карточкам (игнорируем таб)
+    // если поиск НЕ пустой — ищем по всем (игнорируем таб)
     if (q) {
       return PORTFOLIO.filter((x) => {
         const hay = [
@@ -61,10 +59,7 @@ export default function App() {
       });
     }
 
-    // если поиск пустой:
-    // - на home ничего не показываем (только текст)
-    // - на portfolio показываем портфолио
-    // - на остальных вкладках карточки пока не показываем
+    // если поиск пустой — портфолио показываем только на вкладке portfolio
     if (activeTab === "portfolio") {
       return PORTFOLIO.filter((x) => x.tab === "portfolio");
     }
@@ -72,23 +67,8 @@ export default function App() {
     return [];
   }, [query, activeTab]);
 
-  // маленький хак: чтобы pageDesc мог показать count до visible (из-за порядка объявления)
-  function visibleCountPlaceholder() {
-    const q = query.trim().toLowerCase();
-    if (!q) return 0;
-    return PORTFOLIO.filter((x) => {
-      const hay = [
-        x.title,
-        x.description,
-        x.url,
-        (x.tags || []).join(" "),
-        x.tab,
-      ]
-        .join(" ")
-        .toLowerCase();
-      return hay.includes(q);
-    }).length;
-  }
+  const pageTitle = isSearching ? "Результаты поиска" : meta.title;
+  const pageDesc = isSearching ? `Найдено: ${visible.length}` : meta.desc;
 
   return (
     <div className="container">
@@ -181,35 +161,60 @@ export default function App() {
         <h2 className="pageTitle">{pageTitle}</h2>
         <p className="pageSub">{pageDesc}</p>
 
-        {/* Контент вкладок */}
+        {/* Home */}
         {!isSearching && activeTab === "home" && (
           <div style={{ opacity: 0.85, lineHeight: 1.45, marginBottom: 14 }}>
-            Здесь будет удобное меню по разделам сверху справа. Открой «Портфолио»,
-            чтобы увидеть проекты, или воспользуйся поиском.
+            Открой «Портфолио», чтобы увидеть проекты. В «Услуги/Цены/Контакты» —
+            информация о разработке. Поиск сверху ищет по всем проектам.
           </div>
         )}
 
+        {/* Services */}
         {!isSearching && activeTab === "services" && (
-          <div style={{ opacity: 0.85, lineHeight: 1.45, marginBottom: 14 }}>
-            Мы делаем: лендинги, меню для заведений, портфолио, адаптив под телефон,
-            подключение Telegram-бота (кнопка → WebApp), деплой на Vercel + 24/7 бот.
+          <div className="sectionGrid">
+            {SERVICES.map((s) => (
+              <div className="miniCard" key={s.id}>
+                <h3>{s.title}</h3>
+                <p>{s.desc}</p>
+              </div>
+            ))}
           </div>
         )}
 
+        {/* Prices */}
         {!isSearching && activeTab === "prices" && (
-          <div style={{ opacity: 0.85, lineHeight: 1.45, marginBottom: 14 }}>
-            Скоро добавим таблицу пакетов. Пока можно написать в контакты и назвать
-            задачу — подберём стоимость.
+          <div className="sectionGrid">
+            {PRICES.map((p) => (
+              <div className="miniCard" key={p.id}>
+                <h3 style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+                  <span>{p.title}</span>
+                  <span style={{ opacity: 0.9 }}>{p.price}</span>
+                </h3>
+                <p>{p.desc}</p>
+              </div>
+            ))}
           </div>
         )}
 
+        {/* Contacts */}
         {!isSearching && activeTab === "contacts" && (
-          <div style={{ opacity: 0.85, lineHeight: 1.45, marginBottom: 14 }}>
-            Скоро добавим кнопки контактов (Telegram, Instagram, Email).
+          <div className="sectionGrid">
+            {CONTACTS.map((c) => (
+              <a
+                className="miniLinkCard"
+                key={c.id}
+                href={c.href}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <div style={{ opacity: 0.7, fontSize: 12 }}>{c.label}</div>
+                <div style={{ fontSize: 15 }}>{c.value}</div>
+              </a>
+            ))}
           </div>
         )}
 
-        {/* Список карточек: показываем при поиске или на вкладке portfolio */}
+        {/* Portfolio cards (search OR portfolio tab) */}
         {(isSearching || activeTab === "portfolio") && (
           <div className="list">
             {visible.map((item) => {
