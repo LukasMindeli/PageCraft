@@ -1,89 +1,65 @@
-/* ПОРЯДОК СЛОЕВ:
-   1) чёрный фон (у тебя html/body/#root)
-   2) starsLayer
-   3) планеты
-   4) контент (container z-index: 1)
-*/
+/* webapp/src/PlanetsBackground.css */
 
-.planetsLayer{
+.bgRoot {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
   z-index: 0;
-  overflow: hidden;
+  pointer-events: none;
+  background: #000;
 }
 
-/* ⭐️ звёзды */
-.starsLayer{
+/* STARS: много мелких точек */
+.starsLayer {
   position: absolute;
   inset: 0;
-  opacity: 0.55;
-  background-image:
-    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.9) 0, rgba(255,255,255,0) 2px),
-    radial-gradient(1px 1px at 30% 80%, rgba(255,255,255,0.7) 0, rgba(255,255,255,0) 2px),
-    radial-gradient(1px 1px at 60% 40%, rgba(255,255,255,0.8) 0, rgba(255,255,255,0) 2px),
-    radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.6) 0, rgba(255,255,255,0) 2px),
-    radial-gradient(1px 1px at 90% 70%, rgba(255,255,255,0.8) 0, rgba(255,255,255,0) 2px);
-  filter: blur(0.2px);
+  opacity: 1;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.85) 1px, transparent 1.5px),
+    radial-gradient(circle at 70% 20%, rgba(255,255,255,0.7) 1px, transparent 1.6px),
+    radial-gradient(circle at 40% 80%, rgba(255,255,255,0.6) 1px, transparent 1.7px),
+    radial-gradient(circle at 85% 70%, rgba(255,255,255,0.75) 1px, transparent 1.6px),
+    radial-gradient(circle at 10% 65%, rgba(255,255,255,0.5) 1px, transparent 1.8px),
+    radial-gradient(circle at 55% 50%, rgba(255,255,255,0.55) 1px, transparent 1.8px);
+  background-size: 260px 260px;
+  animation: starsTwinkle 6s ease-in-out infinite alternate;
+  filter: blur(0.15px);
 }
 
-/* 🪐 планеты */
-.planet{
+@keyframes starsTwinkle {
+  from { opacity: 0.85; }
+  to   { opacity: 1; }
+}
+
+/* PLANETS */
+.planetsLayer {
   position: absolute;
-  will-change: transform;
+  inset: 0;
+}
+
+.planet {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
   transform: translate3d(0,0,0);
-  image-rendering: auto;
-  user-select: none;
-}
+  will-change: transform;
 
-/* КЛЮЧЕВОЕ: НЕТ пересчёта позиций каждые N секунд.
-   Только бесконечные keyframes с плавными кривыми. */
-
-.driftA{
-  animation: driftA var(--dur) ease-in-out infinite;
-  animation-delay: var(--delay);
-}
-.driftB{
-  animation: driftB var(--dur) ease-in-out infinite;
-  animation-delay: var(--delay);
-}
-.driftC{
-  animation: driftC var(--dur) ease-in-out infinite;
-  animation-delay: var(--delay);
-}
-.driftD{
-  animation: driftD var(--dur) ease-in-out infinite;
+  animation: floatPlanet var(--dur) linear infinite;
   animation-delay: var(--delay);
 }
 
-@keyframes driftA{
-  0%   { transform: translate3d(0, 0, 0); }
-  25%  { transform: translate3d(var(--ax), calc(var(--ay) * -0.35), 0); }
-  50%  { transform: translate3d(calc(var(--ax) * -0.35), var(--ay), 0); }
-  75%  { transform: translate3d(calc(var(--ax) * -1), calc(var(--ay) * -0.2), 0); }
-  100% { transform: translate3d(0, 0, 0); }
+@keyframes floatPlanet {
+  0%   { transform: translate3d(0,0,0); }
+  50%  { transform: translate3d(var(--dx), var(--dy), 0); }
+  100% { transform: translate3d(0,0,0); }
 }
 
-@keyframes driftB{
-  0%   { transform: translate3d(0, 0, 0); }
-  20%  { transform: translate3d(calc(var(--ax) * -0.5), var(--ay), 0); }
-  55%  { transform: translate3d(var(--ax), calc(var(--ay) * 0.2), 0); }
-  80%  { transform: translate3d(calc(var(--ax) * -0.2), calc(var(--ay) * -1), 0); }
-  100% { transform: translate3d(0, 0, 0); }
-}
-
-@keyframes driftC{
-  0%   { transform: translate3d(0, 0, 0); }
-  30%  { transform: translate3d(var(--ax), var(--ay), 0); }
-  60%  { transform: translate3d(calc(var(--ax) * -1), calc(var(--ay) * 0.6), 0); }
-  100% { transform: translate3d(0, 0, 0); }
-}
-
-@keyframes driftD{
-  0%   { transform: translate3d(0, 0, 0); }
-  33%  { transform: translate3d(calc(var(--ax) * 0.6), calc(var(--ay) * -1), 0); }
-  66%  { transform: translate3d(calc(var(--ax) * -1), calc(var(--ay) * 0.3), 0); }
-  100% { transform: translate3d(0, 0, 0); }
+/* vignette to keep strict focus */
+.vignetteLayer {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at center, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.55) 70%, rgba(0,0,0,0.85) 100%);
+  opacity: 0.95;
 }
